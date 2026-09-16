@@ -1,0 +1,23 @@
+@model IReadOnlyList<MembershipPlan>
+@{
+    ViewData["Title"] = "Memberships";
+    ViewData["Description"] = "PFC membership plans from R750 per month. Cancel or upgrade anytime.";
+}
+<section class="section">
+    <div class="wrap">
+        <div class="section-head">
+            <p class="eyebrow">Pricing</p>
+            <h2>Join PFC</h2>
+            <p class="lead">Cancel or upgrade anytime. All plans include full facility access.</p>
+        </div>
+        <div class="plans">
+            @foreach (var plan in Model)
+            {
+                <partial name="_PlanCard" model="plan" />
+            }
+        </div>
+        <p class="form-note" style="margin-top:26px">
+            Prices include VAT. No joining fee, no contract.
+        </p>
+    </div>
+</section>
