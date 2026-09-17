@@ -1,13 +1,23 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using PFC.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-
-// Content currently comes from an in-memory service. When the Part 2 back end
-// lands, swap this single registration for the EF Core-backed implementation —
-// nothing in the controllers or views has to change.
 builder.Services.AddSingleton<IGymDataService, InMemoryGymDataService>();
+builder.Services.AddSingleton<IUserService, InMemoryUserService>();          
+
+builder.Services                                                            
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Denied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;                 
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    });
 
 var app = builder.Build();
 
@@ -20,6 +30,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();    
 app.UseAuthorization();
 
 app.MapControllerRoute(
