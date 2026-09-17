@@ -35,25 +35,25 @@
     <a class="skip-link" href="#main">Skip to main content</a>
 
     <header class="header">
-        <div class="header__inner">
-            <a class="logo" asp-controller="Home" asp-action="Index" aria-label="PFC home"><span>PFC</span></a>
-
-            <nav class="nav" aria-label="Main navigation">
-                @foreach (var item in nav)
-                {
-                    <a asp-controller="@item.Controller" asp-action="@item.Action"
-                       aria-current="@Current(item.Controller)">@item.Label</a>
-                }
-            </nav>
-
-            <div class="header__actions">
+        <div class="header__actions">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="header__login" asp-controller="Dashboard" asp-action="Index">
+                    @User.Identity.Name
+                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                    <button class="btn btn--line btn--sm" type="submit">Sign out</button>
+                </form>
+            }
+            else
+            {
                 <a class="header__login" asp-controller="Account" asp-action="Login">Login</a>
                 <a class="btn btn--red btn--sm" asp-controller="Memberships" asp-action="Index">Join now</a>
-                <button class="burger" type="button" aria-label="Open menu"
-                        aria-expanded="false" aria-controls="navpanel">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
+            }
+            <button class="burger" type="button" aria-label="Open menu"
+                    aria-expanded="false" aria-controls="navpanel">
+                <span></span><span></span><span></span>
+            </button>
         </div>
     </header>
 
