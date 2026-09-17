@@ -71,8 +71,18 @@
             }
         </nav>
         <div class="navpanel__cta">
-            <a class="btn btn--red" asp-controller="Memberships" asp-action="Index">Join now</a>
-            <a class="btn btn--line" asp-controller="Account" asp-action="Login">Log in</a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a class="btn btn--red" asp-controller="Dashboard" asp-action="Index">My dashboard</a>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="btn btn--line btn--block" type="submit">Sign out</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn--red" asp-controller="Memberships" asp-action="Index">Join now</a>
+                <a class="btn btn--line" asp-controller="Account" asp-action="Login">Log in</a>
+            }
         </div>
         <p class="navpanel__meta">
             Open today @todayHours.Display<br />+27 82 670 9027
