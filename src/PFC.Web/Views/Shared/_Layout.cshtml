@@ -13,10 +13,11 @@
         ("Contact", "Index", "Contact")
     };
 
-    string Current(string c) => controller == c ? "page" : null;
+    string? Current(string c) => controller == c ? "page" : null;
 
     var showStickyCta = controller is "Home" or "Classes" or "Coaches" or "Timetable";
     var todayHours = Data.GetHoursFor(DateTime.Today.DayOfWeek);
+    var signedIn = User.Identity?.IsAuthenticated == true;
 }
 <!DOCTYPE html>
 <html lang="en-ZA">
@@ -47,8 +48,20 @@
             </nav>
 
             <div class="header__actions">
-                <a class="header__login" asp-controller="Account" asp-action="Login">Login</a>
-                <a class="btn btn--red btn--sm" asp-controller="Memberships" asp-action="Index">Join now</a>
+                @if (signedIn)
+                {
+                    <a class="header__login" asp-controller="Dashboard" asp-action="Index">
+                        @User.Identity!.Name
+                    </a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
+                        <button class="btn btn--line btn--sm" type="submit">Sign out</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="header__login" asp-controller="Account" asp-action="Login">Login</a>
+                    <a class="btn btn--red btn--sm" asp-controller="Memberships" asp-action="Index">Join now</a>
+                }
                 <button class="burger" type="button" aria-label="Open menu"
                         aria-expanded="false" aria-controls="navpanel">
                     <span></span><span></span><span></span>
@@ -71,8 +84,18 @@
             }
         </nav>
         <div class="navpanel__cta">
-            <a class="btn btn--red" asp-controller="Memberships" asp-action="Index">Join now</a>
-            <a class="btn btn--line" asp-controller="Account" asp-action="Login">Log in</a>
+            @if (signedIn)
+            {
+                <a class="btn btn--red" asp-controller="Dashboard" asp-action="Index">My dashboard</a>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="btn btn--line btn--block" type="submit">Sign out</button>
+                </form>
+            }
+            else
+            {
+                <a class="btn btn--red" asp-controller="Memberships" asp-action="Index">Join now</a>
+                <a class="btn btn--line" asp-controller="Account" asp-action="Login">Log in</a>
+            }
         </div>
         <p class="navpanel__meta">
             Open today @todayHours.Display<br />+27 82 670 9027
@@ -112,7 +135,7 @@
                     </ul>
                 </details>
 
-                <details>
+                <details open>
                     <summary><h4>Opening hours</h4></summary>
                     <dl class="hours">
                         @foreach (var h in Data.GetOpeningHours())
